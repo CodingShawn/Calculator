@@ -1,0 +1,45 @@
+html {
+    height: 100%;
+}
+
+#calculator {
+    border: black 1px solid;
+    height: 500px;
+    width: 400px;
+    display: grid;
+}
+
+#calcScreen {
+    border: black 1px solid;
+    height: auto;
+    width: auto;
+    margin: 10px;
+    font-size: 60px;
+    padding: 15px 5px 0px 5px;
+}
+
+#calcBody {
+    border: black 1px solid;
+    height: 350px;
+    width: auto;
+    margin: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+}
+
+.calcButtons {
+    border: black 1px dotted;
+}
+
+#plus {
+    grid-area: 2/4/4/5;
+}
+
+#equals {
+    grid-area: 4/4/6/5;
+}
+
+#zero {
+    grid-area: 5/1/6/3;
+}
