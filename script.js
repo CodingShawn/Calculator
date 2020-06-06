@@ -5,8 +5,9 @@ const equals = document.getElementById('equals');
 const clear = document.getElementById('clear');
 let newCalculation = true; //to reset calculator if press num after equals
 let preventDoubleOperator = true; // allow switching of operators during calculation
-let preventDoubleEquals = true; // prevent errors when pressing equals consecutively
-let memory;
+let preventDoubleEquals = false; // prevent errors when pressing equals consecutively or before anything is input
+let preventDivideByZero = false;
+let memory = 0;
 let operator;
 
 nums.forEach(num => num.addEventListener('click', updateScreenNum));
@@ -18,7 +19,8 @@ equals.addEventListener('click', calculate);
 clear.addEventListener('click', clearScreen);
 
 function updateScreenNum() {
-    if (newCalculation == false) {
+    if (newCalculation == false || preventDivideByZero == true) {
+        console.log("cleared")
         clearScreen();
     }
     if (calcScreen.textContent.trim().length <= 9) {
@@ -30,6 +32,10 @@ function updateScreenNum() {
 }
 
 function selectOperator() {
+    if (preventDivideByZero == true) {
+        console.log("reset")
+        clearScreen();
+    }
     if (preventDoubleOperator == true) {
         if (!operator == "") {
             calculate();
@@ -38,7 +44,6 @@ function selectOperator() {
         preventDoubleEquals = true;
         newCalculation = true;
         memory = Number(calcScreen.textContent);
-        console.log(memory);
         operator = this.textContent.trim();
         calcScreen.textContent = "0";
         preventDoubleOperator = false;
@@ -49,7 +54,6 @@ function calculate() {
     if (preventDoubleEquals == true) {
         let newNum = Number(calcScreen.textContent);
         let answer;
-        console.log(operator);
         if (operator == "+") {
             answer = add(memory, newNum);
         } else if (operator == "-") {
@@ -57,8 +61,13 @@ function calculate() {
         } else if (operator == "*") {
             answer = multiply(memory, newNum);
         } else if (operator == "/") {
-            answer = divide(memory, newNum);
-            answer = Math.round(answer * 1000000000) / 1000000000; //keep decimal place to 9 decimal place
+            if (!newNum == 0) {
+                answer = divide(memory, newNum);
+                answer = Math.round(answer * 1000000000) / 1000000000; //keep decimal place to 9 decimal place
+            } else {
+                answer = "Don't do it!";
+                preventDivideByZero = true;
+            }
         }
         calcScreen.textContent = answer;
         memory = answer;
@@ -72,10 +81,11 @@ function calculate() {
 function clearScreen() {
     memory = 0;
     operator = "";
-    calcScreen.textContent = memory
+    calcScreen.textContent = memory;
     newCalculation = true;
     preventDoubleOperator = true;
     preventDoubleEquals = true;
+    preventDivideByZero = false;
 }
 
 function add(a, b) {
