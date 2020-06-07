@@ -7,6 +7,11 @@ let newCalculation = true; //to reset calculator if press num after equals
 let preventDoubleOperator = true; // allow switching of operators during calculation
 let preventDoubleEquals = false; // prevent errors when pressing equals consecutively or before anything is input
 let preventDivideByZero = false;
+let orderOfOperation = false;
+let secondOrderOfOperation = false;
+let tempMemory = 0;
+let tempOperator = "";
+let resetDisplay = false;
 let memory = 0;
 let operator;
 
@@ -14,11 +19,20 @@ nums.forEach(num => num.addEventListener('click', updateScreenNum));
 
 operators.forEach(operator => operator.addEventListener('click', selectOperator));
 
-equals.addEventListener('click', calculate);
+equals.addEventListener('click', () => secondOrderOfOperation = false);
+equals.addEventListener('click', () => {
+        if (!operator == "") {
+            calculate();
+        }
+    })
 
 clear.addEventListener('click', clearScreen);
 
 function updateScreenNum() {
+    if (resetDisplay == true) {
+        calcScreen.textContent = 0;
+        resetDisplay = false;
+    }
     if (newCalculation == false || preventDivideByZero == true) {
         console.log("cleared")
         clearScreen();
@@ -33,48 +47,48 @@ function updateScreenNum() {
 
 function selectOperator() {
     if (preventDivideByZero == true) {
-        console.log("reset")
         clearScreen();
     }
+    let newOperator = this.textContent.trim();
+    console.log(`orderofoperation = ${orderOfOperation} newoperator = ${newOperator}`)
+    
+    console.log(` second order of operation: ${secondOrderOfOperation}`);
     if (preventDoubleOperator == true) {
-        if (!operator == "") {
-            calculate();
-            console.log(`answer: ${memory}`)
+        if (orderOfOperation == true && ((newOperator == "*") || (newOperator == "/"))) {
+            secondOrderOfOperation = true;
+        } else if (secondOrderOfOperation == true && ((newOperator == "+") || (newOperator == "-"))) {
+            secondOrderOfOperation = false;
         }
-        preventDoubleEquals = true;
-        newCalculation = true;
-        memory = Number(calcScreen.textContent);
-        operator = this.textContent.trim();
-        calcScreen.textContent = "0";
-        preventDoubleOperator = false;
-    } else operator = this.textContent.trim();
+        if ((operator == "+" || operator == "-") && (newOperator == "*" || newOperator == "/")) {
+            orderOfOperation = true;
+            tempMemory = memory;
+            tempOperator = operator;
+        } else if (!operator == "") {
+            calculate();
+        }
+        setOperator(newOperator);
+    } else operator = newOperator;
 }
 
-function calculate() {
+function calculate() {   
     if (preventDoubleEquals == true) {
-        let newNum = Number(calcScreen.textContent);
-        let answer;
-        if (operator == "+") {
-            answer = add(memory, newNum);
-        } else if (operator == "-") {
-            answer = subtract(memory, newNum);
-        } else if (operator == "*") {
-            answer = multiply(memory, newNum);
-        } else if (operator == "/") {
-            if (!newNum == 0) {
-                answer = divide(memory, newNum);
-                answer = Math.round(answer * 1000000000) / 1000000000; //keep decimal place to 9 decimal place
-            } else {
-                answer = "Don't do it!";
-                preventDivideByZero = true;
-            }
-        }
+        let newNum = Number(calcScreen.textContent);     
+        let answer = compute(memory, newNum, operator);   
+        console.log(`answer =${answer}`);
         calcScreen.textContent = answer;
         memory = answer;
         operator = "";
         newCalculation = false;
         preventDoubleOperator = true;
         preventDoubleEquals = false;
+    }
+    console.log(`second OOO at equals " ${secondOrderOfOperation}`)
+    if (orderOfOperation == true && secondOrderOfOperation == false) {
+        computeOrderOfOperations();
+        orderOfOperation = false;
+        console.log('final calc')
+        calcScreen.textContent = answer;
+        resetDisplay = true;
     }
 }
 
@@ -86,6 +100,48 @@ function clearScreen() {
     preventDoubleOperator = true;
     preventDoubleEquals = true;
     preventDivideByZero = false;
+    orderOfOperation = false;
+    secondOrderOfOperation = false;
+    resetDisplay = false;
+}
+
+function setOperator(newOperator) {
+    preventDoubleEquals = true;
+    newCalculation = true;
+    memory = Number(calcScreen.textContent);
+    operator = newOperator;
+    if (resetDisplay == false) {
+        calcScreen.textContent = "0";
+    }
+    preventDoubleOperator = false;
+}
+
+function compute(oldNum, newNum, operator) {
+    console.log(`memory = ${oldNum}, newNum = ${newNum}, operator = ${operator}`);
+    let answer;
+    if (operator == "+") {
+        answer = add(oldNum, newNum);
+    } else if (operator == "-") {
+        answer = subtract(oldNum, newNum);
+    } else if (operator == "*") {
+        answer = multiply(oldNum, newNum);
+    } else if (operator == "/") {
+        if (!newNum == 0) {
+            answer = divide(oldNum, newNum);
+            answer = Math.round(answer * 1000000000) / 1000000000; //keep decimal place to 9 decimal place
+        } else {
+            answer = "Don't do it!";
+            preventDivideByZero = true;
+        }
+    }
+    return answer;
+}
+
+function computeOrderOfOperations() {
+    console.log("orderofoperations")
+    answer = compute(tempMemory, memory, tempOperator);
+    calcScreen.textContent = answer;
+    memory = answer;
 }
 
 function add(a, b) {
