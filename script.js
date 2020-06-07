@@ -21,7 +21,7 @@ operators.forEach(operator => operator.addEventListener('click', selectOperator)
 
 equals.addEventListener('click', () => secondOrderOfOperation = false);
 equals.addEventListener('click', () => {
-        if (!operator == "") {
+        if (!operator == "") { // prevent bug that happens when hit equals before selecting operator
             calculate();
         }
     })
@@ -29,12 +29,14 @@ equals.addEventListener('click', () => {
 clear.addEventListener('click', clearScreen);
 
 function updateScreenNum() {
-    if (resetDisplay == true) {
+    if (resetDisplay == true) { 
+        //to fix errors that occur when showing partially finished calculations after hitting + or - after 
+        //order of operations
         calcScreen.textContent = 0;
         resetDisplay = false;
     }
     if (newCalculation == false || preventDivideByZero == true) {
-        console.log("cleared")
+        // allow calculations by resetting calc after trying to divide by 0
         clearScreen();
     }
     if (calcScreen.textContent.trim().length <= 9) {
@@ -49,32 +51,32 @@ function selectOperator() {
     if (preventDivideByZero == true) {
         clearScreen();
     }
-    let newOperator = this.textContent.trim();
-    console.log(`orderofoperation = ${orderOfOperation} newoperator = ${newOperator}`)
-    
-    console.log(` second order of operation: ${secondOrderOfOperation}`);
+    let newOperator = this.textContent.trim();    
     if (preventDoubleOperator == true) {
         if (orderOfOperation == true && ((newOperator == "*") || (newOperator == "/"))) {
+            //to allow ongoing calculations to occur during order of operation calculations
             secondOrderOfOperation = true;
         } else if (secondOrderOfOperation == true && ((newOperator == "+") || (newOperator == "-"))) {
+            //to complete order of operation calculations after + or - before continuing further calculations
             secondOrderOfOperation = false;
         }
         if ((operator == "+" || operator == "-") && (newOperator == "*" || newOperator == "/")) {
+            //to store initial operator and num in memory for final calculation in order of operation calculation
             orderOfOperation = true;
             tempMemory = memory;
             tempOperator = operator;
         } else if (!operator == "") {
+            //to carry out calculations behind the scenes before pressing equals
             calculate();
         }
         setOperator(newOperator);
-    } else operator = newOperator;
+    } else operator = newOperator; //allow changing of operators before pressing equals/numbers
 }
 
 function calculate() {   
     if (preventDoubleEquals == true) {
         let newNum = Number(calcScreen.textContent);     
         let answer = compute(memory, newNum, operator);   
-        console.log(`answer =${answer}`);
         calcScreen.textContent = answer;
         memory = answer;
         operator = "";
@@ -82,8 +84,8 @@ function calculate() {
         preventDoubleOperator = true;
         preventDoubleEquals = false;
     }
-    console.log(`second OOO at equals " ${secondOrderOfOperation}`)
     if (orderOfOperation == true && secondOrderOfOperation == false) {
+        //final calculation in order of operations sequence
         computeOrderOfOperations();
         orderOfOperation = false;
         console.log('final calc')
@@ -111,6 +113,7 @@ function setOperator(newOperator) {
     memory = Number(calcScreen.textContent);
     operator = newOperator;
     if (resetDisplay == false) {
+        //this block allows partial calculations to be shown during order of operations after + or -
         calcScreen.textContent = "0";
     }
     preventDoubleOperator = false;
