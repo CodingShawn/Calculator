@@ -95,8 +95,6 @@ window.addEventListener('keydown', function(e) {
 
 
 function updateScreenNum(input) {
-    console.log(input)
-    console.log(typeof(input))
     if (resetDisplay == true) { 
         //to fix errors that occur when showing partially finished calculations after hitting + or - after 
         //order of operations
@@ -116,6 +114,10 @@ function updateScreenNum(input) {
             Number(calcScreen.textContent) == 0 ? calcScreen.textContent = input: 
                             calcScreen.textContent += input;
         }
+    }
+    if (calcScreen.textContent.indexOf(".") !== calcScreen.textContent.lastIndexOf(".")) {
+        //To check if multiple decimal points input
+        calcScreen.textContent = calcScreen.textContent.slice(0, -1);
     }
     preventDoubleOperator = true;
     preventDoubleEquals = true;
@@ -208,6 +210,7 @@ function compute(oldNum, newNum, operator) {
         answer = subtract(oldNum, newNum);
     } else if (operator == "*") {
         answer = multiply(oldNum, newNum);
+        answer = Math.round(answer * 1000000000) / 1000000000
     } else if (operator == "/") {
         if (!newNum == 0) {
             answer = divide(oldNum, newNum);
