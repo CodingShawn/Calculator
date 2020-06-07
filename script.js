@@ -32,7 +32,71 @@ equals.addEventListener('click', () => {
 
 clear.addEventListener('click', clearScreen);
 
-function updateScreenNum() {
+window.addEventListener('keydown', function(e) {
+    switch(e.keyCode) {
+        case 8:
+            back();
+            break;
+        case 67:
+            clearScreen();
+            break;
+        case 111:
+            selectOperator(e.key);
+            break;
+        case 106:
+            selectOperator(e.key);
+            break;
+        case 109:
+            selectOperator(e.key);
+            break;
+        case 107:
+            selectOperator(e.key);
+            break;
+        case 96:
+            updateScreenNum(e.key);
+            break;
+        case 97:
+            updateScreenNum(e.key);
+            break;
+        case 98:
+            updateScreenNum(e.key);
+            break;
+        case 99:
+            updateScreenNum(e.key);
+            break;
+        case 100:
+            updateScreenNum(e.key);
+            break;
+        case 101:
+            updateScreenNum(e.key);
+            break;
+        case 102:
+            updateScreenNum(e.key);
+            break;
+        case 103:
+            updateScreenNum(e.key);
+            break;
+        case 104:
+            updateScreenNum(e.key);
+            break;
+        case 105:
+            updateScreenNum(e.key);
+            break;
+        case 110:
+            updateScreenNum(e.key);
+            break;
+        case 13:
+            calculate();
+            break;
+    }
+}
+
+)
+
+
+function updateScreenNum(input) {
+    console.log(input)
+    console.log(typeof(input))
     if (resetDisplay == true) { 
         //to fix errors that occur when showing partially finished calculations after hitting + or - after 
         //order of operations
@@ -44,18 +108,30 @@ function updateScreenNum() {
         clearScreen();
     }
     if (calcScreen.textContent.trim().length <= 9) {
-        Number(calcScreen.textContent) == 0 ? calcScreen.textContent = this.textContent: 
-                        calcScreen.textContent += this.textContent;
+        if (typeof(input) == "object") {
+            Number(calcScreen.textContent) == 0 ? calcScreen.textContent = this.textContent: 
+                            calcScreen.textContent += this.textContent;
+        } else {
+            console.log('test')
+            Number(calcScreen.textContent) == 0 ? calcScreen.textContent = input: 
+                            calcScreen.textContent += input;
+        }
     }
     preventDoubleOperator = true;
     preventDoubleEquals = true;
 }
 
-function selectOperator() {
+function selectOperator(input) {
+    console.log(input)
     if (preventDivideByZero == true) {
         clearScreen();
     }
-    let newOperator = this.textContent.trim();    
+    let newOperator;
+    try {
+        newOperator = this.textContent.trim();  
+    }  catch {
+        newOperator = input;
+    }
     if (preventDoubleOperator == true) {
         if (orderOfOperation == true && ((newOperator == "*") || (newOperator == "/"))) {
             //to allow ongoing calculations to occur during order of operation calculations
