@@ -32,10 +32,6 @@ html {
     border: black 1px dotted;
 }
 
-#plus {
-    grid-area: 2/4/4/5;
-}
-
 #equals {
     grid-area: 4/4/6/5;
 }

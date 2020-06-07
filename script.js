@@ -3,6 +3,8 @@ const nums = Array.from(document.querySelectorAll('.nums'));
 const operators = Array.from(document.querySelectorAll('.operators'));
 const equals = document.getElementById('equals');
 const clear = document.getElementById('clear');
+const backspace = document.getElementById('backspace');
+
 let newCalculation = true; //to reset calculator if press num after equals
 let preventDoubleOperator = true; // allow switching of operators during calculation
 let preventDoubleEquals = false; // prevent errors when pressing equals consecutively or before anything is input
@@ -18,6 +20,8 @@ let operator;
 nums.forEach(num => num.addEventListener('click', updateScreenNum));
 
 operators.forEach(operator => operator.addEventListener('click', selectOperator));
+
+backspace.addEventListener('click', back);
 
 equals.addEventListener('click', () => secondOrderOfOperation = false);
 equals.addEventListener('click', () => {
@@ -147,6 +151,16 @@ function computeOrderOfOperations() {
     memory = answer;
 }
 
+function back() {
+    console.log(resetDisplay)
+    if (!((calcScreen.textContent.trim() == "0") || (resetDisplay == true))) {
+        calcScreen.textContent = calcScreen.textContent.trim().slice(0, -1);
+    }
+    if (calcScreen.textContent == "") {
+        calcScreen.textContent = "0";
+    }
+}
+ 
 function add(a, b) {
     return a + b;
 }
